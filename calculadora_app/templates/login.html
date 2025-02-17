@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión en Mi Sistema</title>
+    {% load static %}
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://th.bing.com/th/id/R.693c528a7fae8e00612d31b6417a808a?rik=NfJP34%2fOFgRGRw&pid=ImgRaw&r=0');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #0056b3;
+        }
+   
+
+   
+    </style>
+</head>
+<body>
+ 
+    <div class="container">
+        <h2>Iniciar Sesión</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Nombre de usuario" required>
+            <input type="password" id="password" placeholder="Contraseña" required>
+            <button type="submit">Acceder</button>
+            <a href="{% url 'calculadora_para_invitados' %}">Calcular Precio Invitados </a>
+        </form>
+    </div>
+    <script>
+        // Declaración global de usuarios
+        let usuarios = [];
+
+        function buscarUsuarioPorNombre(usuario) {
+            return usuarios.find(u => u.nombre === usuario.nombre && u.contraseña === usuario.contraseña);
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const usuario = { nombre: username, contraseña: password };
+            
+            let usuarioValido = buscarUsuarioPorNombre(usuario);
+            
+            if (username === 'danilo' && password === '1') {
+                usuarioValido = true;
+            }
+            
+            if (usuarioValido) {
+                alert('Bienvenido, ' + username);
+                
+                // Redireccionamiento a la página de inicio
+                window.location.href = '{% url "inicio" %}';// Ajusta esta URL según tu estructura de proyecto
+            } else {
+                alert('Nombre de usuario o contraseña incorrectos');
+            }
+        });
+
+        // Función para cargar usuarios al iniciar la aplicación
+        function cargarUsuarios() {
+            const usuariosGuardados = localStorage.getItem('usuarios');
+            if (usuariosGuardados) {
+                usuarios = JSON.parse(usuariosGuardados);
+            }
+        }
+
+        // Llama a cargarUsuarios al iniciar la página
+        cargarUsuarios();
+    </script>
+</body>
+</html>
+
+
+

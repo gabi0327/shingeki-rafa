@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <title>Inicio</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .menu-lateral {
+            position: fixed;
+            top: 0;
+            left: -260px;
+            height: 100%;
+            width: 270px;
+            background-color: #333;
+            transition: all 0.5s ease-in-out;
+            z-index: 1000;
+        }
+        .menu-lateral.active {
+            left: 0;
+        }
+        nav {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 20px;
+        }
+        nav ul li {
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+        }
+        nav ul li:hover {
+            background-color: #444;
+        }
+        a{
+            color: white;
+            text-decoration: none;
+        }
+        .centrado {
+            font-family: Arial, sans-serif;
+            background-image: url('https://th.bing.com/th/id/R.693c528a7fae8e00612d31b6417a808a?rik=NfJP34%2fOFgRGRw&pid=ImgRaw&r=0');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-top: 20px;
+            color: black;
+        }
+        @media (min-width: 300px) {
+            .menu-lateral {
+                left: auto;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 210px;
+                position: absolute;
+                background-color: #423030;
+                border: 1px solid #e9ecef;
+                box-shadow: 0 0 15px rgba(0,0,0,.2);
+              
+            }
+            .menu-lateral.active {
+                left: 270px;
+                font-size: 70px;
+            }
+            nav ul li {
+        color: white;
+        padding: 10px;
+        cursor: pointer;
+        font-size: 30px; /* Tamaño de fuente base */
+    }
+
+    @media (max-width: 768px) {
+        nav ul li {
+            font-size: 30px; /* Tamaño de fuente mayor en pantallas pequeñas */
+            margin-top: 10px;
+        }
+    }
+         
+        }
+
+        h1{
+          justify-content: center;
+          text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-lateral">
+        <nav>
+            <ul>
+                <li><a href="{% url 'insertar_usuario' %}">Usuarios</a></li>
+                <li><a href="{% url 'insertar_juego' %}">Juegos</a></li>
+                <li><a href="{% url 'insertar_capitulo' %}">Capítulos</a></li>
+                <li><a href="{% url 'insertar_pelicula' %}">Audiovisuales</a></li>
+                <li><a href="{% url 'calculadora' %}">Calculadora</a></li>
+                <li><a href="{% url 'salva' %}">Salvar Datos</a></li>
+                <li><a href="{% url 'cargar_archivo' %}">Cargar Datos</a></li>
+                <li><a href="{% url 'insertar_web' %}">Catálogo</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="centrado">
+        <h1>Shingeki Rafa</h1>
+    </div>
+
+
+</body>
+</html>

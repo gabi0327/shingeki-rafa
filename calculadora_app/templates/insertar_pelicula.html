@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insertar Audiovisuales</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'img/ico.png' %}" type="image/png">
+
+    <style>
+        :root {
+            --bg-color: #f9fafd;
+            --primary-color: #3498db;
+            --secondary-color: #e74c3c;
+            --text-color: #333;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://th.bing.com/th/id/R.693c528a7fae8e00612d31b6417a808a?rik=NfJP34%2fOFgRGRw&pid=ImgRaw&r=0');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+  
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        form {
+            display: grid;
+            gap: 20px;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(var(--secondary-color), 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        a {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            justify-content: center;
+            text-align: center;
+            display: flex;
+            margin-top: 10px;
+        }
+
+   
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Insertar Audiovisuales </h1>
+        <form id="peliculaForm">
+            <input type="text" id="nombre" placeholder="Nombre del Audiovisuales" required>
+            <input type="number" id="precio" placeholder="Precio del Audiovisuales" min="0" step="0.01" required>
+            <button type="submit">Guardar</button>
+        </form>
+        <a href="{% url 'inicio' %}">Inicio</a>
+
+        <a href="{% url 'mostrar_pelicula' %}">Mostrar Audiovisuales</a>
+    </div>
+
+    <script>
+        // Función para cargar películas guardadas al iniciar la aplicación
+        function cargarPeliculas() {
+            const peliculasGuardadas = localStorage.getItem('peliculas');
+            if (peliculasGuardadas) {
+                peliculas = JSON.parse(peliculasGuardadas);
+            }
+        }
+
+        // Arreglo para almacenar las películas
+        let peliculas = [];
+
+        // Función para buscar una película por nombre
+        function buscarPeliculaPorNombre(nombre) {
+            return peliculas.find(pelicula => pelicula.nombre === nombre);
+        }
+
+        // Función para guardar una película
+        function guardarPelicula(pelicula) {
+            const peliculaExistente = buscarPeliculaPorNombre(pelicula.nombre);
+            
+            if (peliculaExistente) {
+                // Mostrar alerta de advertencia
+                if (confirm(`La película ${pelicula.nombre} ya existe.`)) {
+                    mostrarResultado(`Película ${pelicula.nombre} sobrescrita.`);
+                    peliculas[peliculas.findIndex(u => u.nombre === pelicula.nombre)] = pelicula;
+                    localStorage.setItem('peliculas', JSON.stringify(peliculas));
+                } else {
+                    mostrarResultado('Operación cancelada.');
+                }
+            } else {
+                peliculas.push(pelicula);
+                mostrarResultado(`Película ${pelicula.nombre} guardada correctamente.`);
+                
+                // Guardar las películas en localStorage
+                localStorage.setItem('peliculas', JSON.stringify(peliculas));
+            }
+        }
+
+        // Event listener para el formulario
+        document.getElementById('peliculaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Obtenemos los valores de los inputs
+            const nombre = document.getElementById('nombre').value;
+            const precio = parseFloat(document.getElementById('precio').value);
+
+            // Creamos un objeto película
+            const pelicula = { nombre, precio };
+
+            // Guardamos la película
+            guardarPelicula(pelicula);
+
+            // Reiniciamos los campos del formulario
+            document.getElementById('nombre').value = '';
+            document.getElementById('precio').value = '';
+
+            // Mostramos solo el mensaje de éxito
+        });
+
+        // Función para mostrar resultados en la pantalla usando alert()
+        function mostrarResultado(mensaje) {
+            window.alert(mensaje);
+        }
+
+        // Cargar películas al iniciar la aplicación
+        cargarPeliculas();
+    </script>
+</body>
+</html>

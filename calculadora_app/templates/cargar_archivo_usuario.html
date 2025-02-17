@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cargar archivo JSON</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #e74c3c;
+            --background-color: #f4f4f4;
+            --text-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            
+        }
+
+        button[type="submit"]{
+        
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            justify-content: center;
+            
+    
+        }
+
+        button[type="submit"]:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        a {
+            margin-left: 10px;
+            text-decoration: none;
+            color: black;
+            justify-content: center;
+            display: flex;
+            margin-top: 20px;
+      
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cargar archivo JSON</h1>
+        
+        <!-- Formulario para cargar el archivo -->
+        <form id="cargarArchivo">
+            <input type="file" accept=".json" name="archivoJSON">
+            <button type="submit">Cargar</button>
+            <a href="{% url 'login' %}">Atras</a>
+        </form>
+
+        <!-- Elemento donde se mostrarán los resultados -->
+        <div id="resultado"></div>
+    </div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const formulario = document.getElementById('cargarArchivo');
+            const resultado = document.getElementById('resultado');
+
+            formulario.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const archivo = formulario.archivoJSON.files[0];
+                if (archivo) {
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        try {
+                            const json = JSON.parse(e.target.result);
+                            
+                            // Actualizar los arreglos correspondientes con los datos cargados
+                            if ('juegos' in json) {
+                                localStorage.setItem('juegos', JSON.stringify(json.juegos));
+                            }
+                            if ('peliculas' in json) {
+                                localStorage.setItem('peliculas', JSON.stringify(json.peliculas));
+                            }
+                            if ('capitulos' in json) {
+                                localStorage.setItem('capitulos', JSON.stringify(json.capitulos));
+                            }
+
+                            let tabla = '<table border="1">';
+                            tabla += '<tr><th>Clave</th><th>Valor</th></tr>';
+                            
+                            for (let clave in json) {
+                                tabla += `<tr><td>${clave}</td><td>${json[clave]}</td></tr>`;
+                            }
+                            
+                            tabla += '</table>';
+                            resultado.innerHTML = tabla;
+
+                            // Mostrar alerta de éxito
+                            alert("Datos guardados correctamente");
+                        } catch (error) {
+                            console.error('Error al cargar el archivo JSON:', error);
+                            resultado.innerHTML = 'Error al cargar el archivo JSON: ' + error.message;
+                        }
+                    };
+
+                    reader.onerror = function(e) {
+                        console.error('Error al leer el archivo:', e);
+                        resultado.innerHTML = 'Error al leer el archivo';
+                    };
+
+                    reader.readAsText(archivo);
+                } else {
+                    resultado.innerHTML = 'Por favor, seleccione un archivo JSON.';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

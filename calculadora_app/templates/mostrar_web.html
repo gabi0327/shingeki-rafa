@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mostrar Imágenes Guardadas</title>
+    {% load static %}
+
+    <style>
+body {
+    background-image: url('https://th.bing.com/th/id/R.693c528a7fae8e00612d31b6417a808a?rik=NfJP34%2fOFgRGRw&pid=ImgRaw&r=0');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+        .image-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .image-item {
+            background-color: #000000;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(204, 42, 42, 0.1);
+            padding: 10px;
+        }
+        img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+        .image-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+        .delete-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+        .delete-button:hover {
+            transform: scale(1.05);
+        }
+        .info {
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(5px);
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        h1 {
+            font-size: 50px;
+            color: #fffb00;
+            font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            justify-content: center;
+        
+            display: flex;
+          
+     
+         
+        }
+        p {
+            color: #ffffff;
+            margin-bottom: 10px;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .image-item {
+            animation: blink 2s infinite alternate;
+        }
+        .ti{
+            justify-content: center;
+            color: #ffffff;
+            text-align: center;
+          
+        }
+        .navbar {
+        background-image: url('../static/img/img.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    padding: 6px;
+    display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+   
+}
+
+.navbar a {
+    color: #fff;
+    padding: 15px;
+    text-decoration: none;
+    cursor: pointer;
+    
+}
+
+button{
+    border-radius: 60px;
+    background-color: rgb(26, 26, 26);
+    color: white;
+    padding: 17px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+
+#filtroContainer {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#filtroContainer input[type="radio"] {
+    margin-right: 5px;
+}
+
+#filtroContainer label {
+    cursor: pointer;
+}
+
+.navbar-item {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.navbar-item a {
+    margin-right: 5px;
+}
+
+.logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+/* Estilos para pantallas pequeñas (hasta 768px) */
+@media (max-width: 768px) {
+    .image-container {
+        grid-template-columns: 1fr; /* Una sola columna */
+        gap: 15px; /* Reducir el espacio entre imágenes */
+    }
+
+ 
+
+    .image-item {
+        padding: 5px; /* Reducir el padding */
+    }
+
+    h1 {
+        font-size: 30px; /* Reducir el tamaño del título */
+    }
+
+    .navbar {
+        flex-direction: column; /* Cambiar la dirección del navbar a vertical */
+        align-items: center; /* Centrar los elementos */
+    }
+
+    .navbar-item {
+        margin-top: 10px; /* Espacio entre elementos del navbar */
+    }
+
+    .navbar a {
+        padding: 10px; /* Reducir el padding de los enlaces */
+    }
+
+    button {
+        padding: 10px; /* Reducir el padding del botón */
+        font-size: 16px; /* Reducir el tamaño de la fuente */
+    }
+
+    .info {
+        padding: 10px; /* Reducir el padding del contenedor de información */
+    }
+
+    .ti {
+        font-size: 1.2rem; /* Reducir el tamaño del título de la imagen */
+    }
+
+    p {
+        font-size: 0.9rem; /* Reducir el tamaño de la descripción */
+    }
+
+    .delete-button {
+        padding: 3px 8px; /* Reducir el tamaño del botón de eliminar */
+        font-size: 12px; /* Reducir el tamaño de la fuente */
+    }
+}
+
+@media (max-width: 768px) {
+    #filtroContainer {
+        width: 100%; /* Ocupar todo el ancho */
+        padding: 5px; /* Reducir el padding */
+    }
+
+    #filtroContainer label {
+        font-size: 0.9rem; /* Reducir el tamaño de la fuente */
+    }
+
+    #filtroContainer input[type="radio"] {
+        margin-right: 3px; /* Reducir el espacio entre los radio buttons */
+    }
+
+    #busquedaInput {
+        width: 100%; /* Ocupar todo el ancho */
+        margin-top: 10px; /* Espacio superior */
+        padding: 5px; /* Reducir el padding */
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        background-size: auto; /* Ajustar el fondo para que no se vea recortado */
+    }
+
+    .navbar {
+        padding: 5px; /* Reducir el padding */
+    }
+
+    .logo {
+        width: 50px; /* Reducir el tamaño del logo */
+        height: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .image-item {
+        animation: none; /* Desactivar animaciones en móviles */
+    }
+
+    .image-item:hover {
+        transform: none; /* Desactivar transformaciones en hover */
+    }
+}
+
+@media (max-width: 768px) {
+    button {
+        padding: 12px; /* Aumentar el padding para facilitar el toque */
+        font-size: 18px; /* Aumentar el tamaño de la fuente */
+    }
+
+    .delete-button {
+        padding: 5px 10px; /* Aumentar el tamaño del botón de eliminar */
+        font-size: 14px;
+    }
+}
+@media (max-width: 768px) {
+    body {
+        padding: 10px; /* Añadir un poco de padding al cuerpo */
+    }
+
+    .image-container {
+        margin: 0; /* Eliminar márgenes */
+    }
+
+    .image-item {
+        margin-bottom: 10px; /* Espacio entre elementos */
+    }
+}
+@media (max-width: 768px) {
+    h1 {
+        font-size: 24px; /* Reducir el tamaño del título principal */
+        text-align: center; /* Centrar el título */
+    }
+
+    p {
+        font-size: 14px; /* Aumentar el tamaño del texto */
+    }
+}
+@media (max-width: 768px) {
+    #filtrarBtn {
+        width: 100%; /* Ocupar todo el ancho */
+        margin-bottom: 10px; /* Espacio inferior */
+    }
+}
+@media (max-width: 768px) {
+    .image-container {
+        padding: 10px; /* Añadir un poco de padding */
+    }
+}
+@media (max-width: 768px) {
+    .info {
+        padding: 10px; /* Reducir el padding */
+    }
+}
+@media (max-width: 768px) {
+    body {
+        background-image: url('https://th.bing.com/th/id/R.693c528a7fae8e00612d31b6417a808a?rik=NfJP34%2fOFgRGRw&pid=ImgRaw&r=0');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position:center center ; /* Centra la imagen de fondo */
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <button id="filtrarBtn">Filtrar</button>
+        <div class="navbar-item">
+            <img src="https://th.bing.com/th/id/R.10039cff9fb679d6f03495bfa806c886?rik=FsE6gvzf2SV8XQ&pid=ImgRaw&r=0" alt="Logo de Shingeki Rafa" class="logo">
+            <a class="aa" href="{% url 'login' %}">Shingeki Rafa</a>
+
+        </div>
+
+      
+        <!-- Ocultamos el contenedor de filtros -->
+        <div id="filtroContainer" style="display: none;">
+            <input type="radio" id="todo" name="categoria" value="todo" >
+            <label for="todo">Todo</label>
+            <input type="radio" id="juego" name="categoria" value="juego">
+            <label for="juego">Juego</label>
+            <input type="radio" id="pelicula" name="categoria" value="pelicula">
+            <label for="pelicula">Película</label>
+            <input type="radio" id="serie" name="categoria" value="serie">
+            <label for="serie">Serie</label>
+            <input type="radio" id="serie" name="categoria" value="serie">
+            <label for="animado-serie">Animado(Serie)</label>
+            <input type="radio" id="animado" name="categoria" value="animado">            <label for="animado-pelicula">Animados(Película)</label>
+            <label for="dorama">Dorama</label>
+            <input type="radio" id="dorama" name="categoria" value="dorama">            <label for="anime">Anime</label>
+            <label for="manga-comic">Manga-Cómic</label>
+            <input type="radio" id="manga-comic" name="categoria" value="manga-comic">
+            <label for="donghua">Donghua</label>
+            <input type="radio" id="donghua" name="categoria" value="donghua">            <label for="novela">Novela</label>
+            <input type="text" id="busquedaInput" placeholder="Buscar por título de imagen">
+            
+
+
+        </div>
+    </nav>
+    <h1>Catálogo Shingeki Rafa</h1>
+    <div class="image-container"></div>
+
+
+    <script>
+        // Función para mostrar las imágenes guardadas
+        function mostrarImágenesGuardadas() {
+            const container = document.querySelector('.image-container');
+            container.innerHTML = '';
+
+            if (typeof localStorage !== 'undefined') {
+                let imageData = JSON.parse(localStorage.getItem('imageData'));
+                
+                if (imageData && Array.isArray(imageData)) {
+                    imageData.forEach((item, index) => {
+                        const div = document.createElement('div');
+                        div.className = 'image-item';
+                        
+                        const imgContainer = document.createElement('div');
+                        imgContainer.style.position = 'relative';
+                        imgContainer.innerHTML = `
+                          <h2 class="ti">${item.titulo}</h2>
+                            <img src="${item.image}" alt="Imagen">
+                            <button class="delete-button" data-index="${index}">Eliminar</button>
+                        `;
+                        div.appendChild(imgContainer);
+
+                        const infoDiv = document.createElement('div');
+                        infoDiv.innerHTML = `
+                       
+                            <p><strong>Categoría:</strong> ${item.categoria}</p>
+                            <p><strong> Descripción:</strong>  ${item.description}</p>
+                            <p><strong>Precio:</strong>  ${item.precio}</p>
+
+                        `;
+                        div.appendChild(infoDiv);
+
+                        container.appendChild(div);
+                    });
+                } else {
+                    container.innerHTML = '<p>No hay imágenes guardadas.</p>';
+                }
+            } else {
+                container.innerHTML = '<p>Local Storage no soportado.</p>';
+            }
+        }
+
+        // Función para eliminar una imagen específica
+        function eliminarImagen(index) {
+            imagesArray.splice(index, 1);
+            localStorage.setItem('imageData', JSON.stringify(imagesArray));
+            mostrarImágenesGuardadas();
+        }
+
+        // Event listener para los botones de eliminación
+        document.body.addEventListener('click', function(event) {
+            if (event.target.classList.contains('delete-button')) {
+                const index = parseInt(event.target.getAttribute('data-index'));
+                eliminarImagen(index);
+            }
+        });
+
+        // Ejecutar la función al cargar la página
+        window.onload = mostrarImágenesGuardadas;
+
+        // Inicializar el array de imágenes
+        let imagesArray = JSON.parse(localStorage.getItem('imageData')) || [];
+    </script>
+
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para mostrar las imágenes filtradas
+    function mostrarImágenesFiltradas(categoria) {
+        const container = document.querySelector('.image-container');
+        container.innerHTML = '';
+
+        if (typeof localStorage!== 'undefined') {
+            let imageData = JSON.parse(localStorage.getItem('imageData'));
+            
+            if (imageData && Array.isArray(imageData)) {
+                imageData.forEach((item, index) => {
+                    if (categoria === 'todo' || item.categoria === categoria) {
+                        const div = document.createElement('div');
+                        div.className = 'image-item';
+                        
+                        const imgContainer = document.createElement('div');
+                        imgContainer.style.position ='relative';
+                        imgContainer.innerHTML = `
+                          <h2 class="ti">${item.titulo}</h2>
+                            <img src="${item.image}" alt="Imagen">
+                            <button class="delete-button" data-index="${index}">Eliminar</button>
+                        `;
+                        div.appendChild(imgContainer);
+
+                        const infoDiv = document.createElement('div');
+                        infoDiv.innerHTML = `
+                           
+                            <p><strong>Categoría:</strong> ${item.categoria}</p>
+                            <p><strong>Descripción:</strong>  ${item.description}</p>
+                            <p><strong>Precio:</strong>  ${item.precio}</p>
+
+                        `;
+                        div.appendChild(infoDiv);
+
+                        container.appendChild(div);
+                    }
+                });
+            } else {
+                container.innerHTML = '<p>No hay imágenes guardadas.</p>';
+            }
+        } else {
+            container.innerHTML = '<p>Local Storage no soportado.</p>';
+        }
+    }
+
+    // Event listener para el botón de filtrar
+    document.getElementById('filtrarBtn').addEventListener('click', function() {
+        const filtroContainer = document.getElementById('filtroContainer');
+        if (filtroContainer.style.display === 'none') {
+            filtroContainer.style.display = 'block';
+        } else {
+            filtroContainer.style.display = 'none';
+        }
+        mostrarImágenesFiltradas();
+    });
+
+    // Event listener para los radio buttons de categoría
+    document.querySelectorAll('#filtroContainer input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const selectedId = document.querySelector('input[name="categoria"]:checked').id;
+            mostrarImágenesFiltradas(selectedId);
+        });
+    });
+
+    // Mostrar imágenes al cargar la página
+    mostrarImágenesFiltradas();
+});
+    </script>
+
+    <script>
+        function mostrarImágenesGuardadas() {
+    const container = document.querySelector('.image-container');
+    container.innerHTML = '';
+
+    if (typeof localStorage !== 'undefined') {
+        let imageData = JSON.parse(localStorage.getItem('imageData'));
+        
+        if (imageData && Array.isArray(imageData)) {
+            imageData.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'image-item';
+                
+                const imgContainer = document.createElement('div');
+                imgContainer.style.position = 'relative';
+                imgContainer.innerHTML = `
+                  <h2 class="ti">${item.titulo}</h2>
+                    <img src="${item.image}" alt="Imagen">
+                    <button class="delete-button" data-index="${index}">Eliminar</button>
+                `;
+                div.appendChild(imgContainer);
+
+                const infoDiv = document.createElement('div');
+                infoDiv.innerHTML = `
+                   
+                    <p><strong>Categoría:</strong> ${item.categoria}</p>
+                    <p><strong>Descripción:</strong>  ${item.description}</p>
+                    <p><strong>Precio:</strong>  ${item.precio}</p>
+
+                `;
+                div.appendChild(infoDiv);
+
+                container.appendChild(div);
+            });
+        } else {
+            container.innerHTML = '<p>No hay imágenes guardadas.</p>';
+        }
+    } else {
+        container.innerHTML = '<p>Local Storage no soportado.</p>';
+    }
+}
+
+function buscarImagenes(tituloBusqueda) {
+    const container = document.querySelector('.image-container');
+    container.innerHTML = '';
+
+    if (typeof localStorage !== 'undefined') {
+        let imageData = JSON.parse(localStorage.getItem('imageData'));
+        
+        if (imageData && Array.isArray(imageData)) {
+            imageData.forEach((item, index) => {
+                if (item.titulo.toLowerCase().includes(tituloBusqueda.toLowerCase())) {
+                    const div = document.createElement('div');
+                    div.className = 'image-item';
+                    
+                    const imgContainer = document.createElement('div');
+                    imgContainer.style.position = 'relative';
+                    imgContainer.innerHTML = `
+                      <h2 class="ti">${item.titulo}</h2>
+                        <img src="${item.image}" alt="Imagen">
+                        <button class="delete-button" data-index="${index}">Eliminar</button>
+                    `;
+                    div.appendChild(imgContainer);
+
+                    const infoDiv = document.createElement('div');
+                    infoDiv.innerHTML = `
+                       
+                       <p><strong>Categoría:</strong> ${item.categoria}</p>
+                       <p><strong>Descripción:</strong>  ${item.description}</p>
+                       <p><strong>Precio:</strong>  ${item.precio}</p>
+
+                    `;
+                    div.appendChild(infoDiv);
+
+                    container.appendChild(div);
+                }
+            });
+        } else {
+            container.innerHTML = '<p>No hay imágenes guardadas.</p>';
+        }
+    } else {
+        container.innerHTML = '<p>Local Storage no soportado.</p>';
+    }
+}
+
+// Event listener para el input de búsqueda
+document.getElementById('busquedaInput').addEventListener('input', function() {
+    const busqueda = this.value.toLowerCase();
+    buscarImagenes(busqueda);
+});
+    </script>
+</body>
+</html>

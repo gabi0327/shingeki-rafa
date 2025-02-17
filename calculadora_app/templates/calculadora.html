@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Capítulos, Juegos y Películas</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'img/ico.png' %}" type="image/png">
+
+    <style>
+/* Estilos generales */
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+.container {
+  width: 90%;
+  margin: 0 auto;
+  overflow-x: auto;
+}
+
+/* Estilos para las tablas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+th {
+  background-color: #f8f8f8;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Estilos para los botones */
+.botones-laterales {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b2;
+}
+a {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+a:hover {
+  background-color: #0056b2;
+}
+
+/* Estilos responsivos */
+@media screen and (max-width: 768px) {
+  .container {
+    width: 95%;
+  }
+
+  table {
+    font-size: 90%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .botones-laterales {
+    bottom: 10px;
+    right: 10px;
+  }
+
+  button {
+    padding: 7px 15px;
+  }
+
+  th, td {
+    padding: 8px 10px;
+  }
+
+  tr:nth-child(even) {
+    background-color: transparent;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  table {
+    display: block;
+    width: 100%;
+  }
+
+  thead, tbody {
+    display: none;
+  }
+
+  tr {
+    margin: 0;
+    display: block;
+  }
+
+  td {
+    display: block;
+    text-align: right;
+  }
+
+  td:first-child {
+    display: none;
+  }
+
+  td:last-child {
+    border-bottom: 1px solid #ddd;
+  }
+}
+    </style>
+</head>
+<body>
+    <div id="totalGeneralResult" style="margin-top: 20px; font-weight: bold;">Total General: $0.00</div>
+    <div class="botones-laterales">
+        <button onclick="restablecerTotales()">Restablecer</button>
+        <a href="{% url 'inicio' %}">Inicio</a>
+      </div>
+    <table id="capitulosTable">
+        <h1>Lista de Capítulos</h1>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Cantidad de capítulos</th>
+                <th>Resultado</th>
+            </tr>
+        </thead>
+        <tr>
+            <td colspan="3">Total:</td>
+            <td id="totalCapitulosResult">$0.00</td>
+        </tr>
+        <tbody id="capitulosBody">
+            <!-- Aquí se mostrarán los capítulos -->
+        </tbody>
+    </table>
+
+    <table id="juegosTable">
+        <h1>Lista de Juegos</h1>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Cantidad de juegos</th>
+                <th>Resultado</th>
+            </tr>
+        </thead>
+        <tr>
+            <td colspan="3">Total:</td>
+            <td id="totalJuegosResult">$0.00</td>
+        </tr>
+        <tbody id="juegosBody">
+            <!-- Aquí se mostrarán los juegos -->
+        </tbody>
+    </table>
+
+    <table id="peliculasTable">
+        <h1>Lista de Películas</h1>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Cantidad de películas</th>
+                <th>Resultado</th>
+            </tr>
+        </thead>
+        <tr>
+            <td colspan="3">Total:</td>
+            <td id="totalPeliculasResult">$0.00</td>
+        </tr>
+        <tbody id="peliculasBody">
+            <!-- Aquí se mostrarán las películas -->
+        </tbody>
+    </table>
+
+    <script>
+        // Función para mostrar los capítulos
+        function mostrarCapitulos() {
+            const capitulos = JSON.parse(localStorage.getItem('capitulos') || '[]');
+            
+            const tbody = document.getElementById('capitulosBody');
+            tbody.innerHTML = '';
+
+            let total = 0;
+
+            capitulos.forEach(capitulo => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${capitulo.nombre}</td>
+                    <td>$${capitulo.orden.toFixed(2)}</td>
+                    <td><input type="number" id="numero_${capitulo.nombre}" value="0"></td>
+                    <td id="resultado_${capitulo.nombre}">$0.00</td>
+                `;
+                tbody.appendChild(row);
+                
+                const numeroInput = document.getElementById(`numero_${capitulo.nombre}`);
+                numeroInput.addEventListener('input', calcularMultiplicaciones);
+            });
+
+            // Mostramos el total actualizado
+            document.getElementById('totalCapitulosResult').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Función para calcular las multiplicaciones y sumar el total
+        function calcularMultiplicaciones() {
+            const capitulos = JSON.parse(localStorage.getItem('capitulos') || '[]');
+            let totalCapitulos = 0;
+
+            capitulos.forEach(capitulo => {
+                const numeroInput = document.getElementById(`numero_${capitulo.nombre}`);
+                const resultadoSpan = document.getElementById(`resultado_${capitulo.nombre}`);
+                
+                if (numeroInput) {
+                    const numero = parseFloat(numeroInput.value);
+                    const orden = parseFloat(capitulo.orden);
+                    
+                    if (!isNaN(numero) && !isNaN(orden)) {
+                        const resultado = numero * orden;
+                        resultadoSpan.textContent = `$${resultado.toFixed(2)}`;
+                        totalCapitulos += resultado;
+                    }
+                }
+            });
+
+            // Actualizamos el total en la celda superior
+            document.getElementById('totalCapitulosResult').textContent = `$${totalCapitulos.toFixed(2)}`;
+        }
+
+        // Función para mostrar los juegos
+        function mostrarJuegos() {
+            const juegos = JSON.parse(localStorage.getItem('juegos') || '[]');
+            
+            const tbody = document.getElementById('juegosBody');
+            tbody.innerHTML = '';
+
+            let total = 0;
+
+            juegos.forEach(juego => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${juego.nombre}</td>
+                    <td>$${juego.precio.toFixed(2)}</td>
+                    <td><input type="number" id="cantidad_${juego.nombre}" value="0"></td>
+                    <td id="resultado_${juego.nombre}">$0.00</td>
+                `;
+                tbody.appendChild(row);
+                
+                const cantidadInput = document.getElementById(`cantidad_${juego.nombre}`);
+                cantidadInput.addEventListener('input', calcularMultiplicaciones);
+            });
+
+            // Mostramos el total actualizado
+            document.getElementById('totalJuegosResult').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Función para calcular las multiplicaciones y sumar el total
+        function calcularMultiplicaciones() {
+            const capitulos = JSON.parse(localStorage.getItem('capitulos') || '[]');
+            const juegos = JSON.parse(localStorage.getItem('juegos') || '[]');
+            let totalCapitulos = 0;
+            let totalJuegos = 0;
+
+            capitulos.forEach(capitulo => {
+                const numeroInput = document.getElementById(`numero_${capitulo.nombre}`);
+                const resultadoSpan = document.getElementById(`resultado_${capitulo.nombre}`);
+                
+                if (numeroInput) {
+                    const numero = parseFloat(numeroInput.value);
+                    const orden = parseFloat(capitulo.orden);
+                    
+                    if (!isNaN(numero) && !isNaN(orden)) {
+                        const resultado = numero * orden;
+                        resultadoSpan.textContent = `$${resultado.toFixed(2)}`;
+                        totalCapitulos += resultado;
+                    }
+                }
+            });
+
+            juegos.forEach(juego => {
+                const cantidadInput = document.getElementById(`cantidad_${juego.nombre}`);
+                const resultadoSpan = document.getElementById(`resultado_${juego.nombre}`);
+                
+                if (cantidadInput) {
+                    const cantidad = parseFloat(cantidadInput.value);
+                    const precio = parseFloat(juego.precio);
+                    
+                    if (!isNaN(cantidad) && !isNaN(precio)) {
+                        const resultado = cantidad * precio;
+                        resultadoSpan.textContent = `$${resultado.toFixed(2)}`;
+                        totalJuegos += resultado;
+                    }
+                }
+            });
+
+            // Actualizamos los totales en las celdas superiores
+            document.getElementById('totalCapitulosResult').textContent = `$${totalCapitulos.toFixed(2)}`;
+            document.getElementById('totalJuegosResult').textContent = `$${totalJuegos.toFixed(2)}`;
+        }
+
+        // Función para mostrar las películas
+        function mostrarPeliculas() {
+            const peliculas = JSON.parse(localStorage.getItem('peliculas') || '[]');
+            
+            const tbody = document.getElementById('peliculasBody');
+            tbody.innerHTML = '';
+
+            let total = 0;
+
+            peliculas.forEach(pelicula => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${pelicula.nombre}</td>
+                    <td>$${pelicula.precio.toFixed(2)}</td>
+                    <td><input type="number" id="cantidad_${pelicula.nombre}" value="0"></td>
+                    <td id="resultado_${pelicula.nombre}">$0.00</td>
+                `;
+                tbody.appendChild(row);
+                
+                const cantidadInput = document.getElementById(`cantidad_${pelicula.nombre}`);
+                cantidadInput.addEventListener('input', calcularMultiplicaciones);
+            });
+
+            // Mostramos el total actualizado
+            document.getElementById('totalPeliculasResult').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Función para calcular las multiplicaciones y sumar el total
+        function calcularMultiplicaciones() {
+            const capitulos = JSON.parse(localStorage.getItem('capitulos') || '[]');
+            const juegos = JSON.parse(localStorage.getItem('juegos') || '[]');
+            const peliculas = JSON.parse(localStorage.getItem('peliculas') || '[]');
+            let totalCapitulos = 0;
+            let totalJuegos = 0;
+            let totalPeliculas = 0;
+
+            capitulos.forEach(capitulo => {
+                const numeroInput = document.getElementById(`numero_${capitulo.nombre}`);
+                const resultadoSpan = document.getElementById(`resultado_${capitulo.nombre}`);
+                
+                if (numeroInput) {
+                    const numero = parseFloat(numeroInput.value);
+                    const orden = parseFloat(capitulo.orden);
+                    
+                    if (!isNaN(numero) && !isNaN(orden)) {
+                        const resultado = numero * orden;
+                        resultadoSpan.textContent = `$${resultado.toFixed(2)}`;
+                        totalCapitulos += resultado;
+                    }
+                }
+            });
+
+            juegos.forEach(juego => {
+                const cantidadInput = document.getElementById(`cantidad_${juego.nombre}`);
+                const resultadoSpan = document.getElementById(`resultado_${juego.nombre}`);
+                
+                if (cantidadInput) {
+                    const cantidad = parseFloat(cantidadInput.value);
+                    const precio = parseFloat(juego.precio);
+                    
+                    if (!isNaN(cantidad) && !isNaN(precio)) {
+                        const resultado = cantidad * precio;
+                        resultadoSpan.textContent = `$${resultado.toFixed(2)}`;
+                        totalJuegos += resultado;
+                    }
+                }
+            });
+
+            peliculas.forEach(pelicula => {
+                const cantidadInput = document.getElementById(`cantidad_${pelicula.nombre}`);
+                const resultadoSpan = document.getElementById(`resultado_${pelicula.nombre}`);
+                
+                if (cantidadInput) {
+                    const cantidad = parseFloat(cantidadInput.value);
+                    const precio = parseFloat(pelicula.precio);
+                    
+                    if (!isNaN(cantidad) && !isNaN(precio)) {
+                        const resultado = cantidad * precio;
+                        resultadoSpan.textContent = `$${resultado.toFixed(2)}`;
+                        totalPeliculas += resultado;
+                    }
+                }
+            });
+
+            // Actualizamos los totales en las celdas superiores y el total general
+            document.getElementById('totalCapitulosResult').textContent = `$${totalCapitulos.toFixed(2)}`;
+            document.getElementById('totalJuegosResult').textContent = `$${totalJuegos.toFixed(2)}`;
+            document.getElementById('totalPeliculasResult').textContent = `$${totalPeliculas.toFixed(2)}`;
+
+            // Calcular el total general
+            const totalGeneral = totalCapitulos + totalJuegos + totalPeliculas;
+            document.getElementById('totalGeneralResult').textContent = `Total General: $${totalGeneral.toFixed(2)}`;
+        }
+
+        function restablecerTotales() {
+  // Restablece todos los inputs a 0
+  const inputs = document.querySelectorAll('input[type="number"]');
+  inputs.forEach(input => {
+    input.value = '0';
+  });
+
+  // Restablece los resultados
+  const resultadoSpans = document.querySelectorAll('.resultado span');
+  resultadoSpans.forEach(span => {
+    span.textContent = '$0.00';
+  });
+
+  // Restablece los totales
+  document.getElementById('totalCapitulosResult').textContent = '$0.00';
+  document.getElementById('totalJuegosResult').textContent = '$0.00';
+  document.getElementById('totalPeliculasResult').textContent = '$0.00';
+
+  // Restablece el total general
+  document.getElementById('totalGeneralResult').textContent = 'Total General: $0.00';
+}
+
+        // Llamar a las funciones para mostrar capítulos, juegos y películas al cargar la página
+        window.onload = function() {
+            mostrarCapitulos();
+            mostrarJuegos();
+            mostrarPeliculas();
+        };
+    </script>
+</body>
+</html>
